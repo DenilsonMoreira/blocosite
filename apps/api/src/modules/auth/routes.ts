@@ -3,7 +3,7 @@ import { createTransport } from 'nodemailer';
 import { z } from 'zod';
 import { prisma } from '@blocosite/database';
 import type { Environment } from '../../config.js';
-import { authenticate, createSession, passwordHash, passwordMatches, publicUser, safeEqual, secureToken, tokenHash } from './service.js';
+import { authenticate, createSession, passwordHash, passwordMatches, publicUser, safeEqual, secureToken, tokenHash, validOrigin } from './service.js';
 
 const password = z.string().min(10).max(128);
 const registerSchema = z.object({ name: z.string().trim().min(2).max(120), email: z.email().transform((value) => value.toLowerCase()), password, acceptedTerms: z.literal(true) });
@@ -70,6 +70,7 @@ export function registerAuthRoutes(app: FastifyInstance, environment: Environmen
   app.post('/v1/auth/logout', async (request, reply) => {
     const session = await authenticate(request.cookies.blocosite_session, environment);
     if (!session) return error(reply, request, 401, 'AUTH_REQUIRED', 'Entre para continuar.');
+    if (!validOrigin(request.headers.origin, environment)) return error(reply, request, 403, 'CSRF_INVALID', 'Origem da requisição inválida.');
     const csrf = request.headers['x-csrf-token'];
     if (typeof csrf !== 'string' || !safeEqual(tokenHash(csrf, environment.SESSION_PEPPER), session.csrfSecretHash)) return error(reply, request, 403, 'CSRF_INVALID', 'A sessão de segurança expirou.');
     await prisma.session.update({ where: { id: session.id }, data: { revokedAt: new Date() } });

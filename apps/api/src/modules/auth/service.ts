@@ -53,3 +53,7 @@ export function publicUser(user: { id: string; name: string; email: string; emai
 export function validCsrf(csrf: unknown, storedHash: string, environment: Environment): boolean {
   return typeof csrf === 'string' && safeEqual(tokenHash(csrf, environment.SESSION_PEPPER), storedHash);
 }
+
+export function validOrigin(origin: unknown, environment: Environment): boolean {
+  return typeof origin === 'string' && origin === environment.APP_BASE_URL;
+}
