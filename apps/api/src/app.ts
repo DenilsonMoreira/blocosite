@@ -5,11 +5,13 @@ import cookie from '@fastify/cookie';
 import postgres from 'postgres';
 import type { Environment } from './config.js';
 import { registerAuthRoutes } from './modules/auth/routes.js';
+import { registerUserRoutes } from './modules/users/routes.js';
 
 export function buildApp(environment: Environment): FastifyInstance {
   const app = Fastify({ logger: environment.NODE_ENV !== 'test', genReqId: createRequestId });
   void app.register(cookie);
   void app.register(registerAuthRoutes, environment);
+  void app.register(registerUserRoutes, environment);
 
   app.get('/health/live', () => healthResponseSchema.parse({
     status: 'ok', service: 'api', timestamp: new Date().toISOString(),

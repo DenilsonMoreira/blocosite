@@ -77,6 +77,8 @@ resultado: HTTP 200, status ok; readiness confirmou database=ok
 - registro, verificação de e-mail, login, sessão, logout com CSRF, esqueci senha e reset;
 - cookies `HttpOnly`, `SameSite=Lax` e `Secure` em produção;
 - SMTP integrado ao Mailpit e migration automática como job único do Compose.
+- consulta e atualização de perfil, troca de senha com revogação global, encerramento lógico e listagem/revogação de sessões;
+- auditoria persistida para troca de senha e encerramento de conta.
 
 **Migrations:**
 
@@ -106,7 +108,7 @@ resultado: migration aplicada antes da API e serviços saudáveis
 
 **Pendências da fase:**
 
-- rotas de perfil, troca de e-mail/senha e gerenciamento de sessões;
+- troca de e-mail com reverificação;
 - rate limit e validação estrita de origem;
 - testes automatizados de integração para todos os fluxos;
 - telas acessíveis de registro, verificação, login, recuperação e perfil;

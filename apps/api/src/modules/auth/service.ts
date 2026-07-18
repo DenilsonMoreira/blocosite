@@ -49,3 +49,7 @@ export async function passwordMatches(encoded: string, password: string): Promis
 export function publicUser(user: { id: string; name: string; email: string; emailVerifiedAt: Date | null; globalRole: string; timezone: string }) {
   return { id: user.id, name: user.name, email: user.email, emailVerified: Boolean(user.emailVerifiedAt), globalRole: user.globalRole, timezone: user.timezone };
 }
+
+export function validCsrf(csrf: unknown, storedHash: string, environment: Environment): boolean {
+  return typeof csrf === 'string' && safeEqual(tokenHash(csrf, environment.SESSION_PEPPER), storedHash);
+}
