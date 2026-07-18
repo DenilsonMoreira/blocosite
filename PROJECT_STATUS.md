@@ -3,8 +3,8 @@
 ## Estado atual
 
 - Projeto: BlocoSite V1
-- Fase atual: Fase 1 — Banco e autenticação
-- Status: concluída
+- Fase atual: Fase 2 — Sites, membros e templates
+- Status: em andamento
 - Última atualização: 2026-07-18
 
 ## Fase 0 — Bootstrap do monorepo
@@ -126,3 +126,20 @@ resultado: migration aplicada antes da API e serviços saudáveis
 ## Histórico da Fase 1
 
 - Fase 1 concluída em 2026-07-18 com lint, typecheck, testes unitários, 4 testes de integração e builds aprovados integralmente em Docker.
+
+## Fase 2 — Sites, membros e templates
+
+**Status:** em andamento
+
+**Implementado:**
+
+- modelos Prisma de Site, SiteMember, SiteInvitation, Domain e Page;
+- enums oficiais de estado, papel e domínio;
+- migration com subdomínio único, owner como membro, convite restrito a editor e índices parciais para home, slug e domínio primário.
+
+**Pendências da fase:**
+
+- quatro templates e criação transacional;
+- API de sites, convites, papéis e limites;
+- onboarding, seletor e dashboard;
+- testes de isolamento e gates completos.

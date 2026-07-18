@@ -18,6 +18,37 @@ enum UserStatus {
   CLOSED
 }
 
+enum SiteStatus {
+  DRAFT
+  ACTIVE
+  SUSPENDED
+  ARCHIVED
+}
+
+enum SiteRole {
+  OWNER
+  EDITOR
+}
+
+enum PageStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum DomainType {
+  SUBDOMAIN
+  CUSTOM
+}
+
+enum DomainStatus {
+  PENDING
+  VERIFYING
+  VERIFIED
+  ACTIVE
+  FAILED
+  DISABLED
+}
+
 model User {
   id                String   @id @default(uuid()) @db.Uuid
   name              String   @db.VarChar(120)
@@ -35,8 +66,122 @@ model User {
   verificationTokens EmailVerificationToken[]
   resetTokens       PasswordResetToken[]
   auditLogs         AuditLog[]
+  ownedSites        Site[] @relation("SiteOwner")
+  siteMemberships   SiteMember[] @relation("MemberUser")
+  sentInvitations   SiteInvitation[] @relation("InvitationSender")
+  invitedMemberships SiteMember[] @relation("MemberInviter")
+  editedPages       Page[] @relation("PageEditor")
 
   @@map("users")
+}
+
+model Site {
+  id                  String @id @default(uuid()) @db.Uuid
+  ownerId             String @db.Uuid
+  internalName        String @db.VarChar(120)
+  publicName          String @db.VarChar(160)
+  segment             String? @db.VarChar(80)
+  locale              String @default("pt-BR") @db.VarChar(10)
+  timezone            String @default("America/Fortaleza") @db.VarChar(80)
+  status              SiteStatus @default(DRAFT)
+  subdomain           String @unique @db.Citext
+  templateKey         String @db.VarChar(80)
+  draftRevision       Int @default(1)
+  draftPublicSettings Json @default("{\"schemaVersion\":1}")
+  privateSettings     Json @default("{\"schemaVersion\":1}")
+  draftNavigation     Json @default("{\"schemaVersion\":1,\"items\":[]}")
+  draftFooter         Json @default("{\"schemaVersion\":1}")
+  activeReleaseId     String? @db.Uuid
+  noIndex             Boolean @default(true)
+  limitsOverride      Json?
+  createdAt           DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt           DateTime @updatedAt @db.Timestamptz(6)
+  deletedAt           DateTime? @db.Timestamptz(6)
+  owner               User @relation("SiteOwner", fields: [ownerId], references: [id], onDelete: Restrict)
+  members             SiteMember[]
+  invitations         SiteInvitation[]
+  domains             Domain[]
+  pages               Page[]
+  @@index([ownerId])
+  @@index([status])
+  @@map("sites")
+}
+
+model SiteMember {
+  id          String @id @default(uuid()) @db.Uuid
+  siteId      String @db.Uuid
+  userId      String @db.Uuid
+  role        SiteRole
+  invitedById String? @db.Uuid
+  acceptedAt  DateTime @default(now()) @db.Timestamptz(6)
+  createdAt   DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(6)
+  site        Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  user        User @relation("MemberUser", fields: [userId], references: [id], onDelete: Cascade)
+  invitedBy   User? @relation("MemberInviter", fields: [invitedById], references: [id], onDelete: SetNull)
+  @@unique([siteId, userId])
+  @@index([userId])
+  @@map("site_members")
+}
+
+model SiteInvitation {
+  id          String @id @default(uuid()) @db.Uuid
+  siteId      String @db.Uuid
+  email       String @db.Citext
+  role        SiteRole @default(EDITOR)
+  tokenHash   String @unique @db.Char(64)
+  invitedById String @db.Uuid
+  expiresAt   DateTime @db.Timestamptz(6)
+  acceptedAt  DateTime? @db.Timestamptz(6)
+  revokedAt   DateTime? @db.Timestamptz(6)
+  createdAt   DateTime @default(now()) @db.Timestamptz(6)
+  site        Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  invitedBy   User @relation("InvitationSender", fields: [invitedById], references: [id], onDelete: Restrict)
+  @@index([siteId])
+  @@index([email])
+  @@map("site_invitations")
+}
+
+model Domain {
+  id                         String @id @default(uuid()) @db.Uuid
+  siteId                     String @db.Uuid
+  hostname                   String @unique @db.Citext
+  type                       DomainType
+  status                     DomainStatus @default(PENDING)
+  isPrimary                  Boolean @default(false)
+  verificationTokenHash      String? @db.Char(64)
+  verificationTokenCreatedAt DateTime? @db.Timestamptz(6)
+  lastCheckedAt              DateTime? @db.Timestamptz(6)
+  verifiedAt                 DateTime? @db.Timestamptz(6)
+  activatedAt                DateTime? @db.Timestamptz(6)
+  failureReasonCode          String? @db.VarChar(80)
+  createdAt                  DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt                  DateTime @updatedAt @db.Timestamptz(6)
+  site                       Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  @@index([siteId])
+  @@map("domains")
+}
+
+model Page {
+  id             String @id @default(uuid()) @db.Uuid
+  siteId         String @db.Uuid
+  title          String @db.VarChar(160)
+  slug           String @db.Citext
+  isHome         Boolean @default(false)
+  status         PageStatus @default(ACTIVE)
+  sortOrder      Int
+  draftRevision  Int @default(1)
+  draftContent   Json
+  draftSeo       Json @default("{\"schemaVersion\":1}")
+  lastEditedById String @db.Uuid
+  createdAt      DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime @updatedAt @db.Timestamptz(6)
+  deletedAt      DateTime? @db.Timestamptz(6)
+  site           Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  lastEditedBy   User @relation("PageEditor", fields: [lastEditedById], references: [id], onDelete: Restrict)
+  @@index([siteId])
+  @@index([lastEditedById])
+  @@map("pages")
 }
 
 model Session {
