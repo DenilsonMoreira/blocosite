@@ -79,6 +79,7 @@ resultado: HTTP 200, status ok; readiness confirmou database=ok
 - SMTP integrado ao Mailpit e migration automática como job único do Compose.
 - consulta e atualização de perfil, troca de senha com revogação global, encerramento lógico e listagem/revogação de sessões;
 - auditoria persistida para troca de senha e encerramento de conta.
+- CORS restrito ao painel, rate limit nas rotas públicas de autenticação e tela acessível de login.
 
 **Migrations:**
 
@@ -109,7 +110,7 @@ resultado: migration aplicada antes da API e serviços saudáveis
 **Pendências da fase:**
 
 - troca de e-mail com reverificação;
-- rate limit e validação estrita de origem;
+- validação estrita de `Origin` nas mutações autenticadas;
 - testes automatizados de integração para todos os fluxos;
 - telas acessíveis de registro, verificação, login, recuperação e perfil;
 - auditoria das ações críticas e validação completa de reset/revogação.

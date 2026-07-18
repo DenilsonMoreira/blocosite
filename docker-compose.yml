@@ -7,6 +7,7 @@ services:
     command: pnpm --filter @blocosite/admin dev
     environment:
       NODE_ENV: development
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:${API_HOST_PORT:-3333}
     ports:
       - "${ADMIN_PORT:-3000}:3000"
     depends_on:

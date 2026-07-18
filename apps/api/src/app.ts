@@ -2,6 +2,8 @@ import { healthResponseSchema } from '@blocosite/contracts';
 import { createRequestId } from '@blocosite/utils';
 import Fastify, { type FastifyInstance } from 'fastify';
 import cookie from '@fastify/cookie';
+import cors from '@fastify/cors';
+import rateLimit from '@fastify/rate-limit';
 import postgres from 'postgres';
 import type { Environment } from './config.js';
 import { registerAuthRoutes } from './modules/auth/routes.js';
@@ -10,6 +12,8 @@ import { registerUserRoutes } from './modules/users/routes.js';
 export function buildApp(environment: Environment): FastifyInstance {
   const app = Fastify({ logger: environment.NODE_ENV !== 'test', genReqId: createRequestId });
   void app.register(cookie);
+  void app.register(cors, { origin: environment.APP_BASE_URL, credentials: true });
+  void app.register(rateLimit, { global: false });
   void app.register(registerAuthRoutes, environment);
   void app.register(registerUserRoutes, environment);
 

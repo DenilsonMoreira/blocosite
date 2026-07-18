@@ -22,8 +22,9 @@ function error(reply: FastifyReply, request: FastifyRequest, status: number, cod
 
 export function registerAuthRoutes(app: FastifyInstance, environment: Environment) {
   const mail = createTransport({ host: environment.SMTP_HOST, port: environment.SMTP_PORT, secure: false });
+  const limited = { config: { rateLimit: { max: 10, timeWindow: '1 minute' } } };
 
-  app.post('/v1/auth/register', async (request, reply) => {
+  app.post('/v1/auth/register', limited, async (request, reply) => {
     const parsed = registerSchema.safeParse(request.body);
     if (!parsed.success) return error(reply, request, 400, 'VALIDATION_ERROR', 'Revise os dados informados.');
     const existing = await prisma.user.findUnique({ where: { email: parsed.data.email } });
@@ -37,7 +38,7 @@ export function registerAuthRoutes(app: FastifyInstance, environment: Environmen
     return reply.code(201).send({ data: { user: publicUser(user), verificationPending: true }, meta: { requestId: request.id } });
   });
 
-  app.post('/v1/auth/verify-email', async (request, reply) => {
+  app.post('/v1/auth/verify-email', limited, async (request, reply) => {
     const parsed = tokenSchema.safeParse(request.body);
     if (!parsed.success) return error(reply, request, 400, 'VALIDATION_ERROR', 'Token inválido.');
     const record = await prisma.emailVerificationToken.findFirst({ where: { tokenHash: tokenHash(parsed.data.token, environment.TOKEN_PEPPER), usedAt: null, expiresAt: { gt: new Date() } }, include: { user: true } });
@@ -50,7 +51,7 @@ export function registerAuthRoutes(app: FastifyInstance, environment: Environmen
     return { data: { user: publicUser(user), csrf: session.csrf }, meta: { requestId: request.id } };
   });
 
-  app.post('/v1/auth/login', async (request, reply) => {
+  app.post('/v1/auth/login', limited, async (request, reply) => {
     const parsed = loginSchema.safeParse(request.body);
     if (!parsed.success) return error(reply, request, 401, 'INVALID_CREDENTIALS', 'E-mail ou senha inválidos.');
     const user = await prisma.user.findUnique({ where: { email: parsed.data.email } });
@@ -76,7 +77,7 @@ export function registerAuthRoutes(app: FastifyInstance, environment: Environmen
     return { data: { success: true }, meta: { requestId: request.id } };
   });
 
-  app.post('/v1/auth/forgot-password', async (request, reply) => {
+  app.post('/v1/auth/forgot-password', limited, async (request, reply) => {
     const parsed = z.object({ email: z.email().transform((value) => value.toLowerCase()) }).safeParse(request.body);
     if (parsed.success) {
       const user = await prisma.user.findUnique({ where: { email: parsed.data.email } });
@@ -89,7 +90,7 @@ export function registerAuthRoutes(app: FastifyInstance, environment: Environmen
     return reply.code(202).send({ data: { message: 'Se a conta existir, enviaremos as instruções.' }, meta: { requestId: request.id } });
   });
 
-  app.post('/v1/auth/reset-password', async (request, reply) => {
+  app.post('/v1/auth/reset-password', limited, async (request, reply) => {
     const parsed = tokenSchema.extend({ password }).safeParse(request.body);
     if (!parsed.success) return error(reply, request, 400, 'VALIDATION_ERROR', 'Token ou senha inválidos.');
     const record = await prisma.passwordResetToken.findFirst({ where: { tokenHash: tokenHash(parsed.data.token, environment.TOKEN_PEPPER), usedAt: null, expiresAt: { gt: new Date() } } });

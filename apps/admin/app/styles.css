@@ -9,3 +9,11 @@ h1 { margin: 0; max-width: 12ch; font-size: clamp(2.7rem, 8vw, 5.6rem); line-hei
 .description { max-width: 46ch; margin: 28px 0; color: #567061; font-size: 1.1rem; line-height: 1.65; }
 a { display: inline-flex; min-height: 44px; align-items: center; padding: 0 20px; border-radius: 999px; background: #197044; color: white; text-decoration: none; font-weight: 700; }
 a:focus-visible { outline: 3px solid #e5b94f; outline-offset: 3px; }
+.auth-card h1 { font-size: clamp(2.4rem, 6vw, 4.5rem); }
+.auth-form { display: grid; gap: 10px; margin-top: 28px; }
+.auth-form label { margin-top: 8px; font-weight: 700; }
+.auth-form input { min-height: 48px; border: 1px solid #afbeb4; border-radius: 12px; padding: 0 14px; font: inherit; }
+.auth-form input:focus { outline: 3px solid #e5b94f; outline-offset: 2px; border-color: #197044; }
+.auth-form button { min-height: 48px; margin-top: 12px; border: 0; border-radius: 999px; background: #197044; color: white; font: inherit; font-weight: 800; cursor: pointer; }
+.auth-form button:disabled { opacity: .65; cursor: wait; }
+.text-link { width: fit-content; min-height: auto; padding: 0; border-radius: 0; background: transparent; color: #197044; }
