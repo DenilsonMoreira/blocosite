@@ -1,0 +1,28 @@
+import { healthResponseSchema } from '@blocosite/contracts';
+import { createRequestId } from '@blocosite/utils';
+import Fastify, { type FastifyInstance } from 'fastify';
+import postgres from 'postgres';
+import type { Environment } from './config.js';
+
+export function buildApp(environment: Environment): FastifyInstance {
+  const app = Fastify({ logger: environment.NODE_ENV !== 'test', genReqId: createRequestId });
+
+  app.get('/health/live', () => healthResponseSchema.parse({
+    status: 'ok', service: 'api', timestamp: new Date().toISOString(),
+  }));
+
+  app.get('/health/ready', async (_request, reply) => {
+    const sql = postgres(environment.DATABASE_URL, { max: 1, connect_timeout: 2 });
+    try {
+      await sql`select 1`;
+      return healthResponseSchema.parse({ status: 'ok', service: 'api', timestamp: new Date().toISOString(), checks: { database: 'ok' } });
+    } catch {
+      reply.code(503);
+      return healthResponseSchema.parse({ status: 'degraded', service: 'api', timestamp: new Date().toISOString(), checks: { database: 'unavailable' } });
+    } finally {
+      await sql.end({ timeout: 1 });
+    }
+  });
+
+  return app;
+}

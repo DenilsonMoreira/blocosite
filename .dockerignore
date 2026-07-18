@@ -1,0 +1,12 @@
+.git
+.github
+node_modules
+.pnpm-store
+.turbo
+.next
+dist
+coverage
+playwright-report
+test-results
+.env
+*.log

@@ -52,27 +52,37 @@ O BlocoSite não é um editor de layout totalmente livre. Ele oferece blocos con
 
 O prompt inicial pronto está em `prompts/CODEX_INITIAL_PROMPT.md`.
 
-## Desenvolvimento local esperado
+## Desenvolvimento local com Docker
 
-Após a Fase 0:
+Pré-requisito: Docker Desktop com Docker Compose. Node e pnpm não precisam estar instalados no host.
 
 ```bash
-cp .env.example .env
-corepack enable
-pnpm install
-docker compose up -d postgres minio mailpit
-pnpm db:migrate
-pnpm db:seed
-pnpm dev
+Copy-Item .env.example .env
+docker compose up --build
 ```
+
+No Linux/macOS, use `cp .env.example .env` no lugar de `Copy-Item`.
+
+As migrations e o seed serão habilitados na Fase 1, junto com o schema Prisma.
 
 Endereços locais previstos:
 
-- Painel: `http://app.localhost`
-- API: `http://api.localhost`
-- Site demonstrativo: `http://demo.localhost`
+- Painel: `http://localhost:3000`
+- API live: `http://localhost:3333/health/live`
+- API ready: `http://localhost:3333/health/ready`
+- Site em preparação: `http://localhost:3001`
 - MinIO: `http://localhost:9001`
 - Mailpit: `http://localhost:8025`
+
+Toda a validação também roda em contêiner:
+
+```bash
+docker compose --profile tools run --build --rm validate
+```
+
+Esse comando instala dependências com Node 24/pnpm 10 e executa lint, typecheck, testes unitários, testes de integração e build.
+
+Se alguma porta já estiver ocupada, ajuste `ADMIN_PORT`, `API_HOST_PORT`, `SITES_PORT` ou `POSTGRES_PORT` no arquivo `.env` antes de subir o Compose.
 
 ## Documentos principais
 

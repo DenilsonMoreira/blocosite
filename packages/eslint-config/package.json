@@ -1,0 +1,12 @@
+{
+  "name": "@blocosite/eslint-config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": "./index.mjs",
+  "peerDependencies": {
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "typescript-eslint": "^8.49.0"
+  }
+}

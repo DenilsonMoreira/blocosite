@@ -1,0 +1,1 @@
+export default function Home() { return <main><p className="mark">B</p><p className="eyebrow">BlocoSite</p><h1>Site em preparação</h1><p>Estamos organizando tudo por aqui. Volte em breve.</p></main>; }
