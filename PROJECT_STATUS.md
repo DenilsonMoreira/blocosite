@@ -4,7 +4,7 @@
 
 - Projeto: BlocoSite V1
 - Fase atual: Fase 1 — Banco e autenticação
-- Status: não iniciada
+- Status: em andamento
 - Última atualização: 2026-07-18
 
 ## Fase 0 — Bootstrap do monorepo
@@ -64,3 +64,54 @@ resultado: HTTP 200, status ok; readiness confirmou database=ok
 ## Histórico
 
 - Fase 0 concluída em 2026-07-18 com validação integral em Docker.
+
+## Fase 1 — Banco e autenticação
+
+**Status:** em andamento
+
+**Implementado:**
+
+- schema Prisma 6 inicial para User, Session, tokens de verificação/reset e AuditLog;
+- migration PostgreSQL 18 com `citext`, UUIDs, índices e relações;
+- senhas Argon2id e tokens aleatórios armazenados somente por hash;
+- registro, verificação de e-mail, login, sessão, logout com CSRF, esqueci senha e reset;
+- cookies `HttpOnly`, `SameSite=Lax` e `Secure` em produção;
+- SMTP integrado ao Mailpit e migration automática como job único do Compose.
+
+**Migrations:**
+
+- `20260718202000_initial_auth`.
+
+**Testes adicionados:**
+
+- validação manual real de registro, login, sessão e logout com CSRF;
+- unitários existentes continuam passando; integração automatizada da autenticação ainda pendente.
+
+**Comandos executados:**
+
+```text
+docker compose --profile tools run --build --rm validate
+resultado: lint, typecheck, testes e build passaram
+
+docker compose up -d --build
+resultado: migration aplicada antes da API e serviços saudáveis
+```
+
+**Validação manual:**
+
+- registro criou usuário e mensagem de verificação no Mailpit;
+- login retornou usuário e cookies de sessão/CSRF;
+- `/v1/auth/session` retornou a mesma conta;
+- logout com `X-CSRF-Token` revogou a sessão.
+
+**Pendências da fase:**
+
+- rotas de perfil, troca de e-mail/senha e gerenciamento de sessões;
+- rate limit e validação estrita de origem;
+- testes automatizados de integração para todos os fluxos;
+- telas acessíveis de registro, verificação, login, recuperação e perfil;
+- auditoria das ações críticas e validação completa de reset/revogação.
+
+**Correções/decisões registradas:**
+
+- nenhuma mudança no escopo congelado.

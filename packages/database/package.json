@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "exports": "./src/index.ts",
-  "scripts": { "lint": "eslint src", "typecheck": "tsc --noEmit", "build": "tsc", "test": "vitest run --passWithNoTests", "db:generate": "prisma generate", "db:migrate": "prisma migrate dev", "db:seed": "tsx prisma/seed.ts" },
-  "devDependencies": { "@blocosite/tsconfig": "workspace:*", "prisma": "^6.19.0", "tsx": "^4.21.0", "vitest": "^4.0.15" }
+  "scripts": { "lint": "eslint src", "typecheck": "tsc --noEmit", "build": "prisma generate && tsc", "test": "vitest run --passWithNoTests", "db:generate": "prisma generate", "db:migrate": "prisma migrate deploy", "db:migrate:dev": "prisma migrate dev", "db:seed": "tsx prisma/seed.ts" },
+  "dependencies": { "@prisma/client": "^6.19.0", "argon2": "^0.44.0" },
+  "devDependencies": { "@blocosite/tsconfig": "workspace:*", "prisma": "^6.19.0", "tsx": "^4.21.0", "vitest": "^4.0.15" },
+  "prisma": { "seed": "tsx prisma/seed.ts" }
 }

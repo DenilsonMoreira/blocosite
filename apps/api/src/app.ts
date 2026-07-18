@@ -1,11 +1,15 @@
 import { healthResponseSchema } from '@blocosite/contracts';
 import { createRequestId } from '@blocosite/utils';
 import Fastify, { type FastifyInstance } from 'fastify';
+import cookie from '@fastify/cookie';
 import postgres from 'postgres';
 import type { Environment } from './config.js';
+import { registerAuthRoutes } from './modules/auth/routes.js';
 
 export function buildApp(environment: Environment): FastifyInstance {
   const app = Fastify({ logger: environment.NODE_ENV !== 'test', genReqId: createRequestId });
+  void app.register(cookie);
+  void app.register(registerAuthRoutes, environment);
 
   app.get('/health/live', () => healthResponseSchema.parse({
     status: 'ok', service: 'api', timestamp: new Date().toISOString(),

@@ -12,11 +12,13 @@ COPY apps/sites/package.json apps/sites/package.json
 COPY packages/blocks/package.json packages/blocks/package.json
 COPY packages/contracts/package.json packages/contracts/package.json
 COPY packages/database/package.json packages/database/package.json
+COPY packages/database/prisma/schema.prisma packages/database/prisma/schema.prisma
 COPY packages/design-system/package.json packages/design-system/package.json
 COPY packages/eslint-config/package.json packages/eslint-config/package.json
 COPY packages/tsconfig/package.json packages/tsconfig/package.json
 COPY packages/utils/package.json packages/utils/package.json
 RUN pnpm install --frozen-lockfile
+RUN pnpm db:generate
 
 FROM dependencies AS development
 COPY . .
