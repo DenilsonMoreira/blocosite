@@ -34,17 +34,17 @@
 
 ### Entregas
 
-- [ ] schema inicial e migrations;
-- [ ] User, Session, tokens e AuditLog;
-- [ ] registro;
-- [ ] verificação de e-mail;
-- [ ] login/logout;
-- [ ] recuperação/reset;
-- [ ] sessão opaca e CSRF;
-- [ ] perfil e sessões;
-- [ ] telas acessíveis;
-- [ ] e-mails no Mailpit;
-- [ ] testes de segurança básicos.
+- [x] schema inicial e migrations;
+- [x] User, Session, tokens e AuditLog;
+- [x] registro;
+- [x] verificação de e-mail;
+- [x] login/logout;
+- [x] recuperação/reset;
+- [x] sessão opaca e CSRF;
+- [x] perfil e sessões;
+- [x] telas acessíveis;
+- [x] e-mails no Mailpit;
+- [x] testes de segurança básicos.
 
 ### Gate
 

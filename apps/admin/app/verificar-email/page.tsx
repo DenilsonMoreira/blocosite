@@ -1,0 +1,2 @@
+import { VerifyForm } from './verify-form';
+export default async function VerifyPage({ searchParams }: { searchParams: Promise<{ token?: string }> }) { const { token = '' } = await searchParams; return <main><section className="card auth-card"><span className="brand">BlocoSite</span><p className="eyebrow">Confirmação</p><h1>Verifique seu e-mail.</h1><VerifyForm token={token} /></section></main>; }

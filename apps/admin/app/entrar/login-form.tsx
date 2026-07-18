@@ -16,7 +16,7 @@ export function LoginForm() {
         body: JSON.stringify({ email: data.get('email'), password: data.get('password') }),
       });
       if (!response.ok) { setStatus('E-mail ou senha inválidos.'); return; }
-      setStatus('Login realizado com sucesso.');
+      setStatus('Login realizado com sucesso.'); window.location.assign('/perfil');
     } catch { setStatus('Não foi possível conectar. Tente novamente.'); }
     finally { setBusy(false); }
   }
@@ -27,5 +27,6 @@ export function LoginForm() {
     <button type="submit" disabled={busy}>{busy ? 'Entrando…' : 'Entrar'}</button>
     <p role="status" aria-live="polite">{status}</p>
     <a className="text-link" href="/recuperar-senha">Esqueci minha senha</a>
+    <a className="text-link" href="/cadastro">Criar uma conta</a>
   </form>;
 }

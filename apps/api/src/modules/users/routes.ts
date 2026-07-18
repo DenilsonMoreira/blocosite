@@ -65,6 +65,7 @@ export function registerUserRoutes(app: FastifyInstance, environment: Environmen
     const raw = secureToken();
     await prisma.$transaction([
       prisma.user.update({ where: { id: session.userId }, data: { email: parsed.data.email, emailVerifiedAt: null } }),
+      prisma.emailVerificationToken.updateMany({ where: { userId: session.userId, usedAt: null }, data: { usedAt: new Date() } }),
       prisma.emailVerificationToken.create({ data: { userId: session.userId, tokenHash: tokenHash(raw, environment.TOKEN_PEPPER), expiresAt: new Date(Date.now() + 86_400_000) } }),
       prisma.session.updateMany({ where: { userId: session.userId, revokedAt: null }, data: { revokedAt: new Date() } }),
       prisma.auditLog.create({ data: { actorUserId: session.userId, action: 'USER_EMAIL_CHANGED', targetType: 'User', targetId: session.userId, requestId: request.id } }),

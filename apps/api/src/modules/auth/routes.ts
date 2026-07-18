@@ -100,6 +100,7 @@ export function registerAuthRoutes(app: FastifyInstance, environment: Environmen
       prisma.passwordResetToken.update({ where: { id: record.id }, data: { usedAt: new Date() } }),
       prisma.user.update({ where: { id: record.userId }, data: { passwordHash: await passwordHash(parsed.data.password) } }),
       prisma.session.updateMany({ where: { userId: record.userId, revokedAt: null }, data: { revokedAt: new Date() } }),
+      prisma.auditLog.create({ data: { actorUserId: record.userId, action: 'USER_PASSWORD_RESET', targetType: 'User', targetId: record.userId, requestId: request.id } }),
     ]);
     return { data: { success: true }, meta: { requestId: request.id } };
   });

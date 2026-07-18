@@ -4,7 +4,7 @@
 
 - Projeto: BlocoSite V1
 - Fase atual: Fase 1 — Banco e autenticação
-- Status: em andamento
+- Status: concluída
 - Última atualização: 2026-07-18
 
 ## Fase 0 — Bootstrap do monorepo
@@ -67,7 +67,7 @@ resultado: HTTP 200, status ok; readiness confirmou database=ok
 
 ## Fase 1 — Banco e autenticação
 
-**Status:** em andamento
+**Status:** concluída
 
 **Implementado:**
 
@@ -82,6 +82,9 @@ resultado: HTTP 200, status ok; readiness confirmou database=ok
 - CORS restrito ao painel, rate limit nas rotas públicas de autenticação e validação estrita de `Origin` nas mutações autenticadas;
 - troca de e-mail com confirmação da senha, reverificação, revogação global de sessões e auditoria;
 - telas acessíveis de login e recuperação de senha.
+- telas acessíveis de cadastro, verificação de e-mail, redefinição de senha e perfil completo;
+- pipeline Docker reproduzível com PostgreSQL, migration e Mailpit como dependências dos testes;
+- invalidação de tokens anteriores na troca de e-mail e auditoria do reset de senha.
 
 **Migrations:**
 
@@ -90,7 +93,7 @@ resultado: HTTP 200, status ok; readiness confirmou database=ok
 **Testes adicionados:**
 
 - validação manual real de registro, login, sessão e logout com CSRF;
-- unitários existentes continuam passando; integração automatizada da autenticação ainda pendente.
+- quatro testes automatizados de integração cobrem registro/verificação, credenciais inválidas/rate limit, Origin/CSRF/logout e reset único com revogação global.
 
 **Comandos executados:**
 
@@ -108,13 +111,18 @@ resultado: migration aplicada antes da API e serviços saudáveis
 - login retornou usuário e cookies de sessão/CSRF;
 - `/v1/auth/session` retornou a mesma conta;
 - logout com `X-CSRF-Token` revogou a sessão.
+- login pela UI redirecionou ao perfil e carregou os dados e as sessões reais;
+- cadastro, recuperação, redefinição e verificação renderizaram campos, estados e nomes acessíveis;
+- perfil em viewport móvel de 390×844 ficou em uma coluna e sem overflow horizontal.
 
 **Pendências da fase:**
 
-- testes automatizados de integração para todos os fluxos;
-- telas acessíveis de registro, verificação, redefinição de senha e perfil;
-- auditoria das ações críticas e validação completa de reset/revogação.
+- nenhuma.
 
 **Correções/decisões registradas:**
 
 - nenhuma mudança no escopo congelado.
+
+## Histórico da Fase 1
+
+- Fase 1 concluída em 2026-07-18 com lint, typecheck, testes unitários, 4 testes de integração e builds aprovados integralmente em Docker.
